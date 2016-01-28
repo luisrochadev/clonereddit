@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html ng-app="redditClone">
+<head>
+	<title>Reddit Clone</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+
+
+<body ng-controller="RedditController">
+
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Reddit Clone</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" data-toggle="modal" data-target="#subModal"> <span class="glyphicon glyphicon-plus"></span> Submit Post</a></li>
+       
+       <li>    <select ng-model="sorter" ng-init="sorter = '-votes'">
+       <option  value="-votes">Votes</option>
+       <option  value="title">Title</option>
+       <option  value="date">Date</option>
+	</select></li>
+     </ul>
+
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input ng-model="searchText" type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+
+
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+
+
+
+<!-- Post repeat -->
+	<div  style="padding:20px;" ng-repeat="post in posts | orderBy: sorter | filter:searchText" >	
+	
+
+	<div class="postBox">
+	<img src="{{post.imageURL}}" alt="don't worry about it" width="250px">	
+	 <span style="font-size:150%"> {{ post.title }} </span> by {{ post.author }} | 
+
+	 <span ng-class="{'upVoted' : post.votes > 0,'downVoted' : post.votes < 0 } ">
+	 {{post.votes}} 
+	 </span>
+
+	 <span class="glyphicon glyphicon-arrow-up" ng-click="upvote(post)"></span> 
+
+	 <span class="glyphicon glyphicon-arrow-down" ng-click="downvote(post)"></span> <br>
+	 <br>
+	 <div style="display:block">{{post.description}} </div>
+	 <br>
+	
+
+
+
+	<div class = "commentsSection">
+
+	<!-- //ADD COMMENT SWITCH -->
+		<span id="commentButton"a data-toggle="collapse" data-target="#a{{$index}}" aria-expanded="false" aria-controls="collapseExample">
+			<span class="glyphicon glyphicon-pencil" ></span> Add Comment
+		</span> |
+
+
+	<!-- //VIEW COMMENT SWITCH	 -->
+		<span id = "viewComments" data-toggle="collapse" data-target="#{{$index}}" aria-expanded="false" aria-controls="collapseExample">
+			<span class="glyphicon glyphicon-comment"></span> {{post.comments.length}} comments
+
+		</span>
+
+
+		<!-- COMMENT VIEW REPEATER	 -->
+			<div class="collapse " id="{{$index}}">  
+				<div class="well" ng-repeat="comment in post.comments" style="color:black;">
+	  			<strong>{{ comment.author }}:</strong> {{ comment.text }}
+	 			</div>
+	 		</div>
+
+	 	<!-- COMMENT SUBMIT SLIDER -->
+
+	 		<div class="collapse " id="a{{$index}}">  
+				<div class="well" style="color:black;">
+	  		    <form ng-submit="addComment(post)">
+			  	<div class="form-group">
+			      <label for="author">Author</label>
+			    <input ng-model="comment.author" type="text" class="form-control"  placeholder="Author">
+			  	</div>  
+			  	<div class="form-group">    
+			  	<label for="text">Text</label>
+			    <input ng-model = "comment.text" type="text" class="form-control"  placeholder="Text">
+			  	</div>
+			  	<button class="btn btn-primary">Submit comment</button>
+			  	</form>
+	 			</div>
+	 		</div>
+
+	</div>
+
+	
+
+	 <span class="glyphicon glyphicon-calendar"></span> {{post.date | date:'medium'}}
+
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- Submit PostModal -->
+<div class="modal fade" id="subModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Submit a post</h4>
+      </div>
+      <div class="modal-body">
+    
+   <form ng-submit="addPost()">
+  	<div class="form-group">
+    <label for="title">Title</label>
+    <input ng-model="ntitle" type="text" class="form-control"  placeholder="Title">
+  </div>
+  <div class="form-group">
+      <label for="author">Author</label>
+    <input ng-model="nauthor" type="text" class="form-control"  placeholder="Author">
+  </div>  
+  <div class="form-group">    
+  <label for="imageurl">Image Url</label>
+    <input ng-model="nimageURL" type="text" class="form-control"  placeholder="Image Url">
+  </div>
+  <div class="form-group">    
+  <label for="description">Description</label>
+    <input ng-model="ndescription" type="text" class="form-control"  placeholder="Description">
+  </div>
+  <button class="btn btn-primary postedBtn">Submit Post</button>
+
+  </form>
+
+ 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Comment Modal -->
+
+    
+
+
+
+
+
+
+ 
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+
+	
+	
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+	 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.3/angular-moment.min.js"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="ang.js"></script>
+	
+	<script type="text/javascript">
+	$('#subModal').on('shown.bs.modal', function () {
+  		$('#myInput').focus();
+	});	
+
+	// $('#commentModal').on('shown.bs.modal', function () {
+ //  		$('#myInput').focus();
+	// });
+
+		$('.postedBtn').on('click',function() {
+		$('.modal').modal('hide');
+		});
+
+		$('#commentButton').on('click',function() {
+		$('#{{$index}').div('hide');
+		});
+
+		$('#viewComments').on('click',function() {
+		$('#a{{$index}').div('hide');
+		});
+
+	</script>
+	
+
+</body>
+</html>

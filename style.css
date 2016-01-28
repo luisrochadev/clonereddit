@@ -1,0 +1,12 @@
+.postBox{
+	background-color: #f0f0f0;
+	padding: 20px;
+}
+
+.upVoted{
+	color: #009900;
+}
+
+.downVoted{
+	color: #FF0000;
+}
